@@ -1,4 +1,5 @@
 import axios from 'axios'
+import pick from 'lodash/pick'
 
 
 export const search = (query = '') => {
@@ -14,5 +15,18 @@ export const search = (query = '') => {
     hitsPerPage: 16,
   }
 
-  return axios.post(url, data, {params})
+  return axios.post(url, {requests: [data]}, {params})
+    .then(response => {
+      const result = response.data.results[0]
+
+      return {
+        data: result.hits,
+        ...pick(result, [
+          'hitsPerPage',
+          'nbHits',
+          'nbPages',
+          'page',
+        ])
+      }
+    })
 }

@@ -1,8 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import registerServiceWorker from './registerServiceWorker';
+import React from 'react'
+import ReactDOM from 'react-dom'
 
-ReactDOM.render(<App />, document.getElementById('root'));
-registerServiceWorker();
+import registerServiceWorker from './registerServiceWorker'
+import './index.css'
+import App from './app/App'
+
+import { initStore } from './lib/store'
+import { reducers, sagas } from './models'
+
+const store = initStore({reducers, sagas})
+
+
+ReactDOM.render(
+  <App store={store} />,
+  document.getElementById('root')
+)
+registerServiceWorker()

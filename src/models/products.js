@@ -1,4 +1,12 @@
+import {
+  put,
+  call,
+  takeLatest
+} from 'redux-saga/effects'
+
+import { scase } from '../lib/utils'
 import { Model } from '../lib/store/factories'
+import { search as searchProducts } from '../services/products'
 
 
 export const initialState = {
@@ -17,7 +25,7 @@ export const config = {
     'STOPPED_TYPING_QUERY',
   ],
   async: [
-    'LOAD_PRODUCTS'
+    'LOAD_PRODUCTS',
   ],
   reducer: types => ({
     [types.TYPED_QUERY]: (state, action) => ({
@@ -32,7 +40,7 @@ export const config = {
     [types.LOAD_PRODUCTS_SUCCESS]: (state, action) => ({
       ...state,
       loading: false,
-      productions: action.payload
+      products: action.payload
     }),
     [types.LOAD_PRODUCTS_ERROR]: (state, action) => ({
       ...state,
@@ -42,6 +50,27 @@ export const config = {
     }),
 
   }),
+
+  sagas: (types, actions) => ([
+    function* searchProducts () {
+      yield takeLatest([
+        types.STOPPED_TYPING_QUERY,
+        types.LOAD_PRODUCTS_REQUEST,
+      ], function* (action) {
+        try {
+          const query = scase(action.type, {
+            [types.STOPPED_TYPING_QUERY]: action.payload,
+            [types.LOAD_PRODUCTS_REQUEST]: action.payload.query,
+            default: ''
+          })
+          const products = yield call(searchProducts, query)
+          yield put(actions.loadProductsSuccess(products.data))
+        } catch (error) {
+          yield put(actions.loadProductsError(error))
+        }
+      })
+    },
+  ])
 }
 
 export const model = Model(config)

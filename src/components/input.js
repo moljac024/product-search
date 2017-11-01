@@ -2,6 +2,8 @@ import React from 'react'
 import isFunction from 'lodash/isFunction'
 import omit from 'lodash/omit'
 
+import MUIInput from 'material-ui/Input'
+
 
 const noop = () => {}
 
@@ -33,6 +35,6 @@ export default class Input extends React.Component {
 
   render () {
     const props = omit(this.props, ['onStopTyping', 'onStopTypingThreshhold'])
-    return <input {...props} onChange={this.handleChange} />
+    return <MUIInput {...props} onChange={this.handleChange} />
   }
 }

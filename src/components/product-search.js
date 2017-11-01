@@ -1,26 +1,64 @@
 import React from 'react'
 import { connect } from 'react-redux'
 
-import Input from '../components/input'
+import { withStyles } from 'material-ui/styles'
+import Paper from 'material-ui/Paper'
+import Grid from 'material-ui/Grid'
+
+import Input from './input'
+import CircleLoader from './loader-circle'
+import ProductCard from './product-card'
+
 import { actions } from '../models/products'
-import { search as searchProducts } from '../services/products'
 
 
-const Product = ({product}) => <div className="product">
-  <p>{product.name}</p>
-  <img src={product.image} />
-</div>
+
+const styles = theme => ({
+  root: {
+    flexGrow: 1,
+    marginTop: 30,
+  },
+  paper: {
+    padding: 16,
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+})
 
 
-const ProductSearch = props => <div className="product-search">
-  <Input value={props.query}
-    onChange={props.onQueryChange}
-    onStopTyping={props.handleStoppedTyping} />
+const ProductSearch = props => {
+  const { classes } = props
 
-  {props.products && (props.products.map(product =>
-    <Product key={product.objectID} product={product} />
-  ))}
-</div>
+  return <div className={classes.root}>
+
+    <Grid container spacing={24}>
+      <Grid item xs={12}>
+        <div className={classes.paper}>
+          <Input value={props.query}
+            onChange={props.onQueryChange}
+            onStopTyping={props.handleStoppedTyping} />
+        </div>
+      </Grid>
+    </Grid>
+
+
+    {props.products && (props.products.map(product =>
+      <Grid container spacing={24}>
+        <Grid item xs={12}>
+          <div className={classes.paper}>
+            <ProductCard key={product.objectID} product={product} />
+          </div>
+        </Grid>
+      </Grid>
+    ))}
+
+    {(props.loading) && <Grid container spacing={24}>
+      <Grid item xs={12}>
+        <CircleLoader />
+      </Grid>
+    </Grid>}
+  </div>
+}
 
 
 const mapStateToProps = state => {
@@ -43,4 +81,4 @@ const ConnectedProductSearch = connect(
   mapDispatchToProps
 )(ProductSearch)
 
-export default ConnectedProductSearch
+export default withStyles(styles)(ConnectedProductSearch)
